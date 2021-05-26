@@ -1,0 +1,44 @@
+service: sqs-triggers-demo
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  profile: sls
+  region: us-east-1
+  lambdaHashingVersion: "20201221"
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "sqs:SendMessage"
+            - "sqs:GetQueueUrl"
+          Resource: "arn:aws:sqs:${self:provider.region}:811338114632:MyQueue"
+        - Effect: "Allow"
+          Action:
+            - "sqs:ListQueues"
+          Resource: "arn:aws:sqs:${self:provider.region}:811338114632:*"
+
+
+functions:
+  sender:
+    handler: sender.handler
+    events:
+      - http:
+          path: v1/sender
+          method: post
+  receiver:
+    handler: receiver.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - MyQueue
+              - Arn
+
+resources:
+  Resources:
+    MyQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "MyQueue"
