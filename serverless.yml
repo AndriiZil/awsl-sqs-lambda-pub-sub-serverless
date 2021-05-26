@@ -3,8 +3,8 @@ service: sqs-triggers-demo
 provider:
   name: aws
   runtime: nodejs14.x
-  profile: sls
-  region: us-east-1
+  profile: default
+  region: eu-central-1
   lambdaHashingVersion: "20201221"
   iam:
     role:
@@ -13,11 +13,11 @@ provider:
           Action:
             - "sqs:SendMessage"
             - "sqs:GetQueueUrl"
-          Resource: "arn:aws:sqs:${self:provider.region}:811338114632:MyQueue"
+          Resource: "arn:aws:sqs:${self:provider.region}:081578102896:MyQueue"
         - Effect: "Allow"
           Action:
             - "sqs:ListQueues"
-          Resource: "arn:aws:sqs:${self:provider.region}:811338114632:*"
+          Resource: "arn:aws:sqs:${self:provider.region}:081578102896:*"
 
 
 functions:

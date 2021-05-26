@@ -1,0 +1,6 @@
+```
+    sls deploy
+```
+```
+    sls remove
+```

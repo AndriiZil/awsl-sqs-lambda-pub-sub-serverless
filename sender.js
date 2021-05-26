@@ -1,34 +1,40 @@
-var AWS = require('aws-sdk');
-var sqs = new AWS.SQS({
-  region: 'us-east-1'
+const AWS = require('aws-sdk');
+
+const sqs = new AWS.SQS({
+  region: 'eu-central-1'
 });
 
 exports.handler = function(event, context, callback) {
-  var accountId = context.invokedFunctionArn.split(":")[4];
-  var queueUrl = 'https://sqs.us-east-1.amazonaws.com/' + accountId + '/MyQueue';
+  const accountId = context.invokedFunctionArn.split(":")[4];
+
+  console.log('accountId', accountId);
+
+  const queueUrl = 'https://sqs.eu-central-1.amazonaws.com/081578102896/MyQueue';
 
   // response and status of HTTP endpoint
-  var responseBody = {
-    message: ''
+  const responseBody = {
+    message: 'SUCCESS'
   };
-  var responseCode = 200;
+  const responseCode = 200;
 
   // SQS message parameters
-  var params = {
-    MessageBody: event.body,
+  const params = {
+    MessageBody: event.Records[0].body,
     QueueUrl: queueUrl
   };
+
+  console.log('Params', params);
 
   sqs.sendMessage(params, function(err, data) {
     if (err) {
       console.log('error:', "failed to send message" + err);
-      var responseCode = 500;
+      const responseCode = 500;
     } else {
       console.log('data:', data.MessageId);
       responseBody.message = 'Sent to ' + queueUrl;
       responseBody.messageId = data.MessageId;
     }
-    var response = {
+    const response = {
       statusCode: responseCode,
       headers: {
         'Content-Type': 'application/json'
